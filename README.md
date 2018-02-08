@@ -1,2 +1,4 @@
 # gravsim
-A very simple gravity simulator
+A very simple gravity simulator.
+
+

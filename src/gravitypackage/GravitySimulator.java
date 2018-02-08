@@ -19,7 +19,9 @@ import java.awt.event.MouseMotionListener;
 public class GravitySimulator extends JPanel implements MouseListener, MouseMotionListener
 {
 	ArrayList<Entity> EntityList = new ArrayList<Entity>();//the type of the Entity. Can be 
+
 	//these variables are for the tracing. Every dot has a x and y coordinate
+	static final int MAX_TRACER_SIZE = 5000;
 	ArrayList<Double> TracerX = new ArrayList<Double>();
 	ArrayList<Double> TracerY = new ArrayList<Double>();
 
@@ -30,7 +32,7 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 	int mousex = 0;
 	int mousey = 0;
 
-	int speed = 10;
+	int speed = 100;
 
 	boolean tracerOn = true;
 
@@ -210,6 +212,22 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 			EntityList.remove(e1);
 			EntityList.remove(e2);//remove these entities
 		}	
+	}
+
+	//initializes the game
+	void initialize()
+	{
+		while(true)
+		{
+			try
+			{
+				functions();
+			}
+			catch(InterruptedException e)
+			{
+
+			}
+		}
 	}
 
 	void functions() throws InterruptedException
@@ -401,8 +419,6 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 			g2d.drawString("PAUSE", 720, 35);
 		}
 
-		g2d.setPaint(Color.white);
-
 		//draw entities
 		if(EntityList.size() > 0)
 		{
@@ -416,11 +432,11 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 		}
 
 		//draw the tracing points
-		for(int i = 0; i < TracerX.size(); i++)
+		if(tracerOn)
 		{
-			if(tracerOn == true && i < TracerX.size())
+			for(int i = 0; i < TracerX.size(); i++)
 			{
-				if(TracerX.get(i) != null && TracerY.get(i) != null && i > 0)
+				if(TracerX.get(i) != null && TracerY.get(i) != null)
 				{
 					g2d.fillOval(TracerX.get(i).intValue(),TracerY.get(i).intValue(),1,1);
 				}
@@ -428,26 +444,21 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 		}
 
 		//add new dots and remove old ones
-		if(EntityList.size() > 0)
-		{	
-			for(int i = 0; i < EntityList.size(); i++)
-			{
-				if(TracerX.size() > 1000)
-				{
-					TracerX.remove(0);
-					TracerY.remove(0);
-				}
-			}
-			for(int i = 0; i < EntityList.size(); i++)
-			{
-				Entity e = EntityList.get(i);
-				if(e.Type == Entity.TYPE_GRAVITYAFFECTED && tracerOn == true)
-				{
-					TracerX.add(e.X);
-					TracerY.add(e.Y);
-				}	
-			}
+		if(TracerX.size() > MAX_TRACER_SIZE)
+		{
+			TracerX.remove(TracerX.size() - MAX_TRACER_SIZE);
+			TracerY.remove(TracerY.size() - MAX_TRACER_SIZE);
 		}
+		for(int i = 0; i < EntityList.size(); i++)
+		{
+			Entity e = EntityList.get(i);
+			if(e.Type == Entity.TYPE_GRAVITYAFFECTED && tracerOn == true)
+			{
+				TracerX.add(e.X);
+				TracerY.add(e.Y);
+			}	
+		}
+
 		//draw the edited id
 		int editedID = getEdited();
 		if(editedID > -1)
@@ -492,26 +503,7 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 		frame.add(game);
 		frame.setSize(1000, 700);                                        //creating window
 		frame.setVisible(true);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		/*new Thread(){
-			public void start()
-			{
-				while(true)
-				{
-					frame.repaint(100);
-					try {
-						Thread.sleep(1);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			}
-		}.start();*/
-		while (true) 
-		{
-			game.functions(); 
-		}
+		game.initialize();
 	}
 }
 
@@ -525,7 +517,9 @@ class Entity
 	public double XMomentum = 0;
 	public double Mass;
 	public int Type;
+
 	public boolean edited = false;
+	public boolean anchored = false;
 	public Entity(double x, double y, double mass, int type)
 	{
 		X = x;
