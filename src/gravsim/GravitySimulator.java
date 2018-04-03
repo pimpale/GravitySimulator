@@ -401,7 +401,7 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 
 		g2d.fillRect(0, 0, 700, 700);
 		g2d.setPaint(Color.white);
-		g2d.setFont(new Font("Courier New", Font.PLAIN, 12));
+		g2d.setFont(new Font("Courier", Font.BOLD, 12));
 		g2d.fillRect(710, 20, 80, 20);
 		g2d.fillRect(800, 20, 80, 20);
 		g2d.fillRect(890, 20, 80, 20);
@@ -419,10 +419,11 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 			g2d.drawString("PAUSE", 720, 35);
 		}
 
+		g2d.setPaint(Color.white);
+		
 		//draw entities
 		if(EntityList.size() > 0)
 		{
-			g2d.setPaint(Color.white);
 			for(int i = 0; i < EntityList.size(); i++)
 			{
 				Entity e = EntityList.get(i);
@@ -467,12 +468,9 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 			int bigradius = (int)(5+Math.sqrt(e.Mass));
 			g2d.drawOval((int)(e.X-bigradius), (int)(e.Y-bigradius), bigradius*2, bigradius*2);
 			g2d.drawString("STATS:", 710, 60);//draw stats
-
 			g2d.drawString("MASS: " + (float)e.Mass, 710, 100);
-
 			g2d.drawString("X_POSITION: " +(float)e.X, 710, 140);
 			g2d.drawString("Y_POSITION: " +(float)e.Y, 710, 160);
-
 			g2d.drawString("X_VELOCITY: " +(float)(e.XMomentum/e.Mass), 710, 200);
 			g2d.drawString("Y_VELOCITY: " +(float)(e.YMomentum/e.Mass), 710, 220);
 
@@ -492,7 +490,6 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 
 			g2d.drawString("EDIT", 900, 200);
 			g2d.drawString("EDIT", 900, 220);
-			g2d.setPaint(Color.white);
 		}		
 	}	
 
