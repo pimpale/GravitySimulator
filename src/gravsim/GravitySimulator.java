@@ -175,6 +175,22 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 		return numberInResponse;
 	}
 
+	void removeEdited()
+	{
+		for(int i = 0; i < EntityList.size(); i++)
+		{
+			EntityList.get(i).edited = false;
+		}
+	}
+	
+	void removeVelEdited()
+	{
+		for(int i = 0; i < EntityList.size(); i++)
+		{
+			EntityList.get(i).edited = false;
+		}
+	}
+	
 	int getEdited()
 	{
 		for(int i = 0; i < EntityList.size();i++)
@@ -187,7 +203,17 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 		return -1;
 	}
 
-
+	int getVelEdited()
+	{
+		for(int i = 0; i < EntityList.size(); i++)
+		{
+			if(EntityList.get(i).veledited)
+			{
+				return i;
+			}
+		}
+		return -1;
+	}
 
 	void collideEntities(int EntityIndex1, int EntityIndex2)
 	{
@@ -252,7 +278,6 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 				double mousedistance = Math.sqrt(Math.pow(mousex - e.x,2) + Math.pow(mousey - e.y,2));
 				if(mousedistance < entityRadius+2)//if it is within the radius
 				{
-
 					int editedID = getEdited();
 					if(editedID > -1)//remove
 					{
@@ -265,6 +290,13 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 					}
 				}
 				
+				int vellocx = (int)(e.x + 10*(e.xMomentum/e.mass)); 
+				int vellocy = (int)(e.y + 10*(e.yMomentum/e.mass));
+				double velocitydistance = Math.sqrt(Math.pow(mousex - vellocx,2) + Math.pow(mousey - vellocy,2));
+				if(velocitydistance < 10)
+				{
+					e.veledited = true;
+				}
 			}
 		}
 
@@ -324,15 +356,16 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 					}
 				}
 				
-				if(paused && mouseDown && e.type == Entity.TYPE_GRAVITYAFFECTED)
+				if(e.veledited)
 				{
-					int vellocx = (int)(e.x + 10*(e.xMomentum/e.mass)); 
-					int vellocy = (int)(e.y + 10*(e.yMomentum/e.mass));
-					double velocitydistance = Math.sqrt(Math.pow(mousex - vellocx,2) + Math.pow(mousey - vellocy,2));
-					if(velocitydistance < 10)
+					if(mouseDown)
 					{
-						e.xMomentum = ((mousex - e.x)/10) * e.mass; 
-						e.yMomentum = ((mousey - e.y)/10) * e.mass; 
+						e.xMomentum = ((mousex - e.x)/10)*e.mass;
+						e.yMomentum = ((mousey - e.y)/10)*e.mass;
+					}
+					else
+					{
+						e.veledited = false;
 					}
 				}
 				
@@ -542,6 +575,7 @@ class Entity
 	public int type;
 
 	public boolean edited = false;
+	public boolean veledited = false;
 	public boolean anchored = false;
 	public Entity(double x, double y, double mass, int type)
 	{
