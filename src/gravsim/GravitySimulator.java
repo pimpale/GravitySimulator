@@ -467,6 +467,16 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 			Entity e = EntityList.get(editedID);
 			int bigradius = (int)(5+Math.sqrt(e.Mass));
 			g2d.drawOval((int)(e.X-bigradius), (int)(e.Y-bigradius), bigradius*2, bigradius*2);
+			
+			
+			int vellocx = (int)(e.X + 10*(e.XMomentum/e.Mass)); 
+			int vellocy = (int)(e.Y + 10*(e.YMomentum/e.Mass));
+			
+			g2d.setPaint(Color.BLUE);
+			g2d.drawLine((int)e.X, (int)e.Y, vellocx, vellocy);
+			
+			g2d.setPaint(Color.WHITE);
+			
 			g2d.drawString("STATS:", 710, 60);//draw stats
 			g2d.drawString("MASS: " + (float)e.Mass, 710, 100);
 			g2d.drawString("X_POSITION: " +(float)e.X, 710, 140);
