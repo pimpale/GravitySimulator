@@ -33,6 +33,7 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 	int mousey = 0;
 
 	int speed = 100;
+	final int vectormultiplier = 30;
 
 	boolean tracerOn = true;
 
@@ -290,8 +291,8 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 					}
 				}
 				
-				int vellocx = (int)(e.x + 10*(e.xMomentum/e.mass)); 
-				int vellocy = (int)(e.y + 10*(e.yMomentum/e.mass));
+				int vellocx = (int)(e.x + vectormultiplier*(e.xMomentum/e.mass)); 
+				int vellocy = (int)(e.y + vectormultiplier*(e.yMomentum/e.mass));
 				double velocitydistance = Math.sqrt(Math.pow(mousex - vellocx,2) + Math.pow(mousey - vellocy,2));
 				if(velocitydistance < 10)
 				{
@@ -360,8 +361,8 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 				{
 					if(mouseDown)
 					{
-						e.xMomentum = ((mousex - e.x)/10)*e.mass;
-						e.yMomentum = ((mousey - e.y)/10)*e.mass;
+						e.xMomentum = ((mousex - e.x)/vectormultiplier)*e.mass;
+						e.yMomentum = ((mousey - e.y)/vectormultiplier)*e.mass;
 					}
 					else
 					{
@@ -515,8 +516,8 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 			g2d.drawOval((int)(e.x-bigradius), (int)(e.y-bigradius), bigradius*2, bigradius*2);
 			
 			
-			int vellocx = (int)(e.x + 10*(e.xMomentum/e.mass)); 
-			int vellocy = (int)(e.y + 10*(e.yMomentum/e.mass));
+			int vellocx = (int)(e.x + vectormultiplier*(e.xMomentum/e.mass)); 
+			int vellocy = (int)(e.y + vectormultiplier*(e.yMomentum/e.mass));
 			
 			if(paused && Math.sqrt(Math.pow(e.xMomentum,2) + Math.pow(e.yMomentum,2)) > 1)
 			{
