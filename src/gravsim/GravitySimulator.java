@@ -520,7 +520,7 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 			
 			if(paused && Math.sqrt(Math.pow(e.xMomentum,2) + Math.pow(e.yMomentum,2)) > 1)
 			{
-				g2d.setPaint(Color.BLUE);
+				g2d.setPaint(Color.CYAN);
 				g2d.drawLine((int)e.x, (int)e.y, vellocx, vellocy);
 				g2d.drawOval(vellocx - 5, vellocy - 5, 10, 10);
 				g2d.setPaint(Color.WHITE);
