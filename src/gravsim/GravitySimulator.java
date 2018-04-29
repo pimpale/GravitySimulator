@@ -21,8 +21,8 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 	ArrayList<Entity> EntityList = new ArrayList<Entity>();//the type of the Entity. Can be 
 
 	//these variables are for the tracing. Every dot has a x and y coordinate
-	static final int MAX_TRACER_SIZE = 5000;
-	ArrayList<Double> TracerX = new ArrayList<Double>();
+	static final int MAx_TRACER_SIZE = 5000;
+	ArrayList<Double> Tracerx = new ArrayList<Double>();
 	ArrayList<Double> TracerY = new ArrayList<Double>();
 
 
@@ -56,7 +56,7 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 		//toggles tracing of Entities
 		if(IsButtonClicked(890, 20, 80,20))
 		{
-			TracerX.clear();
+			Tracerx.clear();
 			TracerY.clear();
 			tracerOn = !tracerOn;
 		}
@@ -198,12 +198,12 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 		{
 			Entity e1 = EntityList.get(EntityIndex1);
 			Entity e2 = EntityList.get(EntityIndex2);
-			double newX = (e1.X*e1.Mass + e2.X*e2.Mass)/(e1.Mass+e2.Mass);//weighted averages
+			double newx = (e1.x*e1.Mass + e2.x*e2.Mass)/(e1.Mass+e2.Mass);//weighted averages
 			double newY = (e1.Y*e1.Mass + e2.Y*e2.Mass)/(e1.Mass+e2.Mass);
-			double newXMomentum = e1.XMomentum + e2.XMomentum;//add together momentum, conserving it
+			double newxMomentum = e1.xMomentum + e2.xMomentum;//add together momentum, conserving it
 			double newYMomentum = e1.YMomentum + e2.YMomentum;
 			double newMass = e1.Mass + e2.Mass;
-			Entity newEntity = new Entity(newX, newY, newXMomentum, newYMomentum, newMass, Entity.TYPE_GRAVITYAFFECTED);
+			Entity newEntity = new Entity(newx, newY, newxMomentum, newYMomentum, newMass, Entity.TYPE_GRAVITYAFFECTED);
 			if(e1.edited || e2.edited)
 			{
 				newEntity.edited = true;
@@ -249,7 +249,7 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 			{
 				Entity e = EntityList.get(i);
 				double entityRadius = 1+e.getRadius();//getting radius from the area, in this case the mass
-				double mousedistance = Math.sqrt(Math.pow(mousex - e.X,2) + Math.pow(mousey - e.Y,2));
+				double mousedistance = Math.sqrt(Math.pow(mousex - e.x,2) + Math.pow(mousey - e.Y,2));
 				if(mousedistance < entityRadius+2)//if it is within the radius
 				{
 
@@ -261,7 +261,7 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 					e.edited = true;
 					if(mouseDown == true)
 					{
-						e.Type = Entity.TYPE_DRAGGABLE;
+						e.type = Entity.TYPE_DRAGGABLE;
 					}
 				}
 			}
@@ -274,16 +274,16 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 			Entity e = EntityList.get(editedID);
 			double newMass = getResponse("Input Mass", e.Mass, false,true);
 
-			double xVelocity = e.XMomentum/e.Mass;//get velocity of entity
+			double xVelocity = e.xMomentum/e.Mass;//get velocity of entity
 			double yVelocity = e.YMomentum/e.Mass;
 			e.Mass = newMass;
-			e.XMomentum = e.Mass*xVelocity;
+			e.xMomentum = e.Mass*xVelocity;
 			e.YMomentum = e.Mass*yVelocity;
 		}
 		if(IsButtonClicked(900, 130, 50, 12))
 		{
 			Entity e = EntityList.get(editedID);
-			e.X = getResponse("Input X location", e.X ,false,true);//set location (positive values only)
+			e.x = getResponse("Input x location", e.x ,false,true);//set location (positive values only)
 		}
 		if(IsButtonClicked(900, 150, 50, 12))
 		{
@@ -293,7 +293,7 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 		if(IsButtonClicked(900, 190, 50, 12))
 		{	
 			Entity e = EntityList.get(editedID);
-			e.XMomentum = e.Mass*getResponse("Input X momentum", e.XMomentum ,false,false);//sets the x momentum to the mass of the object * the user input velocity
+			e.xMomentum = e.Mass*getResponse("Input x momentum", e.xMomentum ,false,false);//sets the x momentum to the mass of the object * the user input velocity
 		}
 		if(IsButtonClicked(900, 210, 50, 12))
 		{
@@ -310,22 +310,22 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 			for(int i = 0; i < EntityList.size(); i++)
 			{
 				Entity e = EntityList.get(i);
-				if(e.Type == Entity.TYPE_DRAGGABLE)
+				if(e.type == Entity.TYPE_DRAGGABLE)
 				{
 					if(mouseDown)
 					{
-						e.X = mousex;
+						e.x = mousex;
 						e.Y = mousey;
 					}
 					else
 					{
-						e.Type = Entity.TYPE_GRAVITYAFFECTED;
+						e.type = Entity.TYPE_GRAVITYAFFECTED;
 					}
 				}
 
-				if(e.X < 0 || e.X > 700 || e.Y < 0 || e.Y > 700)
+				if(e.x < 0 || e.x > 700 || e.Y < 0 || e.Y > 700)
 				{
-					if(e.Type == Entity.TYPE_GRAVITYAFFECTED)
+					if(e.type == Entity.TYPE_GRAVITYAFFECTED)
 					{
 						EntityList.remove(i);
 					}
@@ -340,7 +340,7 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 				for(int i = 0; i < EntityList.size(); i++)
 				{
 					Entity e = EntityList.get(i);
-					e.X += e.XMomentum/e.Mass;
+					e.x += e.xMomentum/e.Mass;
 					e.Y += e.YMomentum/e.Mass;//move each entity
 				}
 			}
@@ -354,24 +354,24 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 		{
 			for(int i = 0; i < EntityList.size(); i++)
 			{
-				if(EntityList.get(i).Type==Entity.TYPE_GRAVITYAFFECTED)
+				if(EntityList.get(i).type==Entity.TYPE_GRAVITYAFFECTED)
 				{
 					Entity e1 = EntityList.get(i);
 					for(int a = 0; a < EntityList.size(); a++)
 					{
 						Entity e2 = EntityList.get(a); 
-						if(i != a && e2.Type == Entity.TYPE_GRAVITYAFFECTED)
+						if(i != a && e2.type == Entity.TYPE_GRAVITYAFFECTED)
 						{
-							double distance = Math.sqrt(Math.pow(e1.X-e2.X,2)+ Math.pow(e1.Y-e2.Y,2));
+							double distance = Math.sqrt(Math.pow(e1.x-e2.x,2)+ Math.pow(e1.Y-e2.Y,2));
 							if(distance > 1 + 0.7*(e1.getRadius()+e2.getRadius()))//this block changes the momentum of e2 
 							{
 								//this algorithm calculates gravity and modifies e2 velocity 
 								//finds the angle from e2 to e1
-								double E2toE1Angle = Math.atan2(e1.Y-e2.Y,e1.X-e2.X);
+								double E2toE1Angle = Math.atan2(e1.Y-e2.Y,e1.x-e2.x);
 								//finds the magnitude of the force
 								double force = 1*(e1.Mass*e2.Mass)*Math.pow(distance,-2);
 								//apply force to e2
-								e2.XMomentum += Math.cos(E2toE1Angle)*force;
+								e2.xMomentum += Math.cos(E2toE1Angle)*force;
 								e2.YMomentum += Math.sin(E2toE1Angle)*force;
 							}
 							else//otherwise, if the objects are too close
@@ -428,34 +428,34 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 			{
 				Entity e = EntityList.get(i);
 				int eRadius = 1+(int)e.getRadius();
-				g2d.fillOval((int)(e.X-eRadius), (int)(e.Y-eRadius), eRadius*2, eRadius*2);
+				g2d.fillOval((int)(e.x-eRadius), (int)(e.Y-eRadius), eRadius*2, eRadius*2);
 			}
 		}
 
 		//draw the tracing points
 		if(tracerOn)
 		{
-			for(int i = 0; i < TracerX.size(); i++)
+			for(int i = 0; i < Tracerx.size(); i++)
 			{
-				if(TracerX.get(i) != null && TracerY.get(i) != null)
+				if(Tracerx.get(i) != null && TracerY.get(i) != null)
 				{
-					g2d.fillOval(TracerX.get(i).intValue(),TracerY.get(i).intValue(),1,1);
+					g2d.fillOval(Tracerx.get(i).intValue(),TracerY.get(i).intValue(),1,1);
 				}
 			}
 		}
 
 		//add new dots and remove old ones
-		if(TracerX.size() > MAX_TRACER_SIZE)
+		if(Tracerx.size() > MAx_TRACER_SIZE)
 		{
-			TracerX.remove(TracerX.size() - MAX_TRACER_SIZE);
-			TracerY.remove(TracerY.size() - MAX_TRACER_SIZE);
+			Tracerx.remove(Tracerx.size() - MAx_TRACER_SIZE);
+			TracerY.remove(TracerY.size() - MAx_TRACER_SIZE);
 		}
 		for(int i = 0; i < EntityList.size(); i++)
 		{
 			Entity e = EntityList.get(i);
-			if(e.Type == Entity.TYPE_GRAVITYAFFECTED && tracerOn == true)
+			if(e.type == Entity.TYPE_GRAVITYAFFECTED && tracerOn == true)
 			{
-				TracerX.add(e.X);
+				Tracerx.add(e.x);
 				TracerY.add(e.Y);
 			}	
 		}
@@ -466,22 +466,26 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 		{
 			Entity e = EntityList.get(editedID);
 			int bigradius = (int)(5+Math.sqrt(e.Mass));
-			g2d.drawOval((int)(e.X-bigradius), (int)(e.Y-bigradius), bigradius*2, bigradius*2);
+			g2d.drawOval((int)(e.x-bigradius), (int)(e.Y-bigradius), bigradius*2, bigradius*2);
 			
 			
-			int vellocx = (int)(e.X + 10*(e.XMomentum/e.Mass)); 
+			int vellocx = (int)(e.x + 10*(e.xMomentum/e.Mass)); 
 			int vellocy = (int)(e.Y + 10*(e.YMomentum/e.Mass));
 			
+			if(gamepaused == true)
+			{
 			g2d.setPaint(Color.BLUE);
-			g2d.drawLine((int)e.X, (int)e.Y, vellocx, vellocy);
+			g2d.drawLine((int)e.x, (int)e.Y, vellocx, vellocy);
+			
+			g2d.drawString("v", vellocx, vellocy);
 			
 			g2d.setPaint(Color.WHITE);
-			
+			}
 			g2d.drawString("STATS:", 710, 60);//draw stats
 			g2d.drawString("MASS: " + (float)e.Mass, 710, 100);
-			g2d.drawString("X_POSITION: " +(float)e.X, 710, 140);
+			g2d.drawString("x_POSITION: " +(float)e.x, 710, 140);
 			g2d.drawString("Y_POSITION: " +(float)e.Y, 710, 160);
-			g2d.drawString("X_VELOCITY: " +(float)(e.XMomentum/e.Mass), 710, 200);
+			g2d.drawString("x_VELOCITY: " +(float)(e.xMomentum/e.Mass), 710, 200);
 			g2d.drawString("Y_VELOCITY: " +(float)(e.YMomentum/e.Mass), 710, 220);
 
 			g2d.fillRect(900, 90, 50, 12);//draw edit buttons
@@ -518,31 +522,31 @@ class Entity
 {
 	public static final int TYPE_GRAVITYAFFECTED = 0;
 	public static final int TYPE_DRAGGABLE = 1;
-	public double X;
+	public double x;
 	public double Y;
 	public double YMomentum = 0;
-	public double XMomentum = 0;
+	public double xMomentum = 0;
 	public double Mass;
-	public int Type;
+	public int type;
 
 	public boolean edited = false;
 	public boolean anchored = false;
 	public Entity(double x, double y, double mass, int type)
 	{
-		X = x;
-		Y = y;
-		Mass = mass;
-		Type = type;
+		this.x = x;
+		this.Y = y;
+		this.Mass = mass;
+		this.type = type;
 	}
 
 	public Entity(double x, double y, double xmomentum, double ymomentum, double mass, int type)
 	{
-		X = x;
-		Y = y;
-		XMomentum = xmomentum;
-		YMomentum = ymomentum;
-		Mass = mass;
-		Type = type;
+		this.x = x;
+		this.Y = y;
+		this.xMomentum = xmomentum;
+		this.YMomentum = ymomentum;
+		this.Mass = mass;
+		this.type = type;
 	}
 
 	public double getRadius()
