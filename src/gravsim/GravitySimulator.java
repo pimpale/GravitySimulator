@@ -188,7 +188,7 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 	{
 		for(int i = 0; i < EntityList.size(); i++)
 		{
-			EntityList.get(i).edited = false;
+			EntityList.get(i).veledited = false;
 		}
 	}
 	
@@ -259,6 +259,31 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 		}	
 	}
 
+	double getDistance(Entity e1, Entity e2)
+	{
+		return Math.sqrt(Math.pow(e1.x-e2.x,2) + Math.pow(e1.y-e2.y,2));
+	}
+	
+	/**
+	 * gets the direction to "to" from "from" in radians
+	 */
+	double getDirection(Entity from, Entity to)
+	{
+		return Math.atan2(to.y-from.y,to.x-from.x);
+	}
+	
+	/**
+	 * gets the Force of gravity acting on entity "affected" from the entity "source" 
+	 */
+	Force getGravity(Entity source, Entity affected)
+	{
+		double dist = getDistance(source, affected);
+		double dire = getDirection(affected, source);
+		double magn = (source.mass*affected.mass)*Math.pow(dist,-2);
+		return new Force(dire, magn);
+	}
+	
+	
 	//initializes the game
 	void initialize()
 	{
@@ -297,8 +322,6 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 				if(mousedistance < entityRadius+2)//if it is within the radius
 				{
 					removeEdited();
-					removeVelEdited();
-					e.veledited = true;
 					e.edited = true;
 					if(mouseDown == true)
 					{
@@ -306,48 +329,48 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 					}
 				}
 				
-				int vellocx = (int)(e.x + vectormultiplier*(e.xMomentum/e.mass)); 
-				int vellocy = (int)(e.y + vectormultiplier*(e.yMomentum/e.mass));
-				double velocitydistance = Math.sqrt(Math.pow(mousex - vellocx,2) + Math.pow(mousey - vellocy,2));
-				if(velocitydistance < 10)
-				{
-					e.veledited = true;
-				}
 			}
 		}
 
-		int editedID = getEdited();
-		//the following buttons edit the properties of the selected Entity
-		if(IsButtonClicked(900, 90, 50, 12))//set mass to a positive value
 		{
-			Entity e = EntityList.get(editedID);
-			double newMass = getResponse("Input Mass", e.mass, false,true);
-
-			double xVelocity = e.xMomentum/e.mass;//get velocity of entity
-			double yVelocity = e.yMomentum/e.mass;
-			e.mass = newMass;
-			e.xMomentum = e.mass*xVelocity;
-			e.yMomentum = e.mass*yVelocity;
+			Entity e = EntityList.get(getEdited());
+			int vellocx = (int)(e.x + vectormultiplier*(e.xMomentum/e.mass)); 
+			int vellocy = (int)(e.y + vectormultiplier*(e.yMomentum/e.mass));
+			double velocitydistance = Math.sqrt(Math.pow(mousex - vellocx,2) + Math.pow(mousey - vellocy,2));
+			if(velocitydistance < 10)
+			{
+				e.veledited = true;
+			}
 		}
-		if(IsButtonClicked(900, 130, 50, 12))
+		
 		{
-			Entity e = EntityList.get(editedID);
-			e.x = getResponse("Input x location", e.x ,false,true);//set location (positive values only)
-		}
-		if(IsButtonClicked(900, 150, 50, 12))
-		{
-			Entity e = EntityList.get(editedID);
-			e.y = getResponse("Input Y location", e.y ,false,true);
-		}
-		if(IsButtonClicked(900, 190, 50, 12))
-		{	
-			Entity e = EntityList.get(editedID);
-			e.xMomentum = e.mass*getResponse("Input x momentum", e.xMomentum ,false,false);//sets the x momentum to the mass of the object * the user input velocity
-		}
-		if(IsButtonClicked(900, 210, 50, 12))
-		{
-			Entity e = EntityList.get(editedID);
-			e.yMomentum = e.mass*getResponse("Input Y momentum", e.yMomentum ,false,false);
+			Entity e = EntityList.get(getEdited());
+			//the following buttons edit the properties of the selected Entity
+			if(IsButtonClicked(900, 90, 50, 12))//set mass to a positive value
+			{
+				double newMass = getResponse("Input Mass", e.mass, false,true);
+				double xVelocity = e.xMomentum/e.mass;//get velocity of entity
+				double yVelocity = e.yMomentum/e.mass;
+				e.mass = newMass;
+				e.xMomentum = e.mass*xVelocity;
+				e.yMomentum = e.mass*yVelocity;
+			}
+			if(IsButtonClicked(900, 130, 50, 12))
+			{
+				e.x = getResponse("Input x location", e.x ,false,true);//set location (positive values only)
+			}
+			if(IsButtonClicked(900, 150, 50, 12))
+			{
+				e.y = getResponse("Input Y location", e.y ,false,true);
+			}
+			if(IsButtonClicked(900, 190, 50, 12))
+			{	
+				e.xMomentum = e.mass*getResponse("Input x momentum", e.xMomentum ,false,false);//sets the x momentum to the mass of the object * the user input velocity
+			}
+			if(IsButtonClicked(900, 210, 50, 12))
+			{
+				e.yMomentum = e.mass*getResponse("Input Y momentum", e.yMomentum ,false,false);
+			}
 		}
 	}
 
@@ -372,12 +395,16 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 					}
 				}
 				
-				if(e.veledited)
+				if(e.edited && e.veledited)
 				{
 					if(mouseDown)
 					{
 						e.xMomentum = ((mousex - e.x)/vectormultiplier)*e.mass;
 						e.yMomentum = ((mousey - e.y)/vectormultiplier)*e.mass;
+					}
+					else
+					{
+						e.veledited = false;
 					}
 				}
 				
@@ -426,14 +453,8 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 							double distance = Math.sqrt(Math.pow(e1.x-e2.x,2)+ Math.pow(e1.y-e2.y,2));
 							if(distance > 1 + 0.7*(getRadius(e1)+getRadius(e2)))//this block changes the momentum of e2 
 							{
-								//this algorithm calculates gravity and modifies e2 velocity 
-								//finds the angle from e2 to e1
-								double E2toE1Angle = Math.atan2(e1.y-e2.y,e1.x-e2.x);
-								//finds the magnitude of the force
-								double force = 1*(e1.mass*e2.mass)*Math.pow(distance,-2);
-								//apply force to e2
-								e2.xMomentum += Math.cos(E2toE1Angle)*force;
-								e2.yMomentum += Math.sin(E2toE1Angle)*force;
+								Force f = getGravity(e1, e2);
+								applyForce(e2, f);
 							}
 							else//otherwise, if the objects are too close
 							{
@@ -480,27 +501,15 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 			g2d.drawString("PAUSE", 720, 35);
 		}
 
-		g2d.setPaint(Color.white);
-		
-		//draw entities
-		if(EntityList.size() > 0)
-		{
-			for(int i = 0; i < EntityList.size(); i++)
-			{
-				Entity e = EntityList.get(i);
-				int eRadius = 1+(int)getRadius(e);
-				g2d.fillOval((int)(e.x-eRadius), (int)(e.y-eRadius), eRadius*2, eRadius*2);
-			}
-		}
-
 		//draw the tracing points
 		if(tracerOn)
 		{
+			g2d.setPaint(new Color(255,0,0,50));
 			for(int i = 0; i < TracerX.size(); i++)
 			{
 				if(TracerX.get(i) != null && TracerY.get(i) != null)
 				{
-					g2d.fillOval(TracerX.get(i).intValue(),TracerY.get(i).intValue(),1,1);
+					g2d.fillOval(TracerX.get(i).intValue(),TracerY.get(i).intValue(),3,3);
 				}
 			}
 		}
@@ -514,36 +523,42 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 		for(int i = 0; i < EntityList.size(); i++)
 		{
 			Entity e = EntityList.get(i);
-			if(e.type == Entity.TYPE_GRAVITYAFFECTED && tracerOn == true)
+			if(!paused && e.type == Entity.TYPE_GRAVITYAFFECTED && tracerOn == true)
 			{
 				TracerX.add(e.x);
 				TracerY.add(e.y);
 			}	
 		}
-
-		//draw the veledited id
-		int velEditedID = getVelEdited();
-		if(velEditedID > -1)
-		{
-			Entity e = EntityList.get(velEditedID);
-			
-			int vellocx = (int)(e.x + vectormultiplier*(e.xMomentum/e.mass)); 
-			int vellocy = (int)(e.y + vectormultiplier*(e.yMomentum/e.mass));
-			
-			g2d.setPaint(Color.CYAN);
-			g2d.drawLine((int)e.x, (int)e.y, vellocx, vellocy);
-			g2d.drawOval(vellocx - 5, vellocy - 5, 10, 10);
-			g2d.setPaint(Color.WHITE);
-			g2d.drawString("V", vellocx -2, vellocy +2);
-		}
 		
+		
+		//draw entities
+		if(EntityList.size() > 0)
+		{
+			g2d.setPaint(Color.white);
+			for(int i = 0; i < EntityList.size(); i++)
+			{
+				Entity e = EntityList.get(i);
+				int eRadius = 1+(int)getRadius(e);
+				g2d.fillOval((int)(e.x-eRadius), (int)(e.y-eRadius), eRadius*2, eRadius*2);
+			}
+		}
+
 		//draw the edited id
 		int editedID = getEdited();
 		if(editedID > -1)
 		{
 			Entity e = EntityList.get(editedID);
 			int bigradius = (int)(5+Math.sqrt(e.mass));
+			g2d.setPaint(Color.WHITE);
 			g2d.drawOval((int)(e.x-bigradius), (int)(e.y-bigradius), bigradius*2, bigradius*2);
+			
+			int vellocx = (int)(e.x + vectormultiplier*(e.xMomentum/e.mass)); 
+			int vellocy = (int)(e.y + vectormultiplier*(e.yMomentum/e.mass));
+			g2d.setPaint(Color.CYAN);
+			g2d.drawLine((int)e.x, (int)e.y, vellocx, vellocy);
+			g2d.drawOval(vellocx - 5, vellocy - 5, 10, 10);
+			g2d.setPaint(Color.WHITE);
+			g2d.drawString("V", vellocx -2, vellocy +2);
 			
 			g2d.drawString("STATS:", 710, 60);//draw stats
 			g2d.drawString("MASS: " + (float)e.mass, 710, 100);
