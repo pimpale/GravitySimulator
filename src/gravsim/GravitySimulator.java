@@ -261,6 +261,7 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 	{
 		repaint(10);
 		moveEntity();
+		affectEdited();
 		gravity();
 		Thread.sleep(speed);
 	}
@@ -393,7 +394,12 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 			}
 		}
 	}
-
+	
+	void affectEdited()
+	{
+		Entity e = EntityList.get(getEdited());
+	}
+	
 
 	void gravity()
 	{
@@ -519,7 +525,7 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 			int vellocx = (int)(e.x + vectormultiplier*(e.xMomentum/e.mass)); 
 			int vellocy = (int)(e.y + vectormultiplier*(e.yMomentum/e.mass));
 			
-			if(paused && Math.sqrt(Math.pow(e.xMomentum,2) + Math.pow(e.yMomentum,2)) > 1)
+			if(paused && e.veledited)
 			{
 				g2d.setPaint(Color.CYAN);
 				g2d.drawLine((int)e.x, (int)e.y, vellocx, vellocy);
