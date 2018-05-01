@@ -261,7 +261,6 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 	{
 		repaint(10);
 		moveEntity();
-		affectEdited();
 		gravity();
 		Thread.sleep(speed);
 	}
@@ -388,16 +387,14 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 				for(int i = 0; i < EntityList.size(); i++)
 				{
 					Entity e = EntityList.get(i);
-					e.x += e.xMomentum/e.mass;
-					e.y += e.yMomentum/e.mass;//move each entity
+					if(e.type == Entity.TYPE_GRAVITYAFFECTED && !e.anchored)
+					{
+						e.x += e.xMomentum/e.mass;
+						e.y += e.yMomentum/e.mass;//move each entity
+					}
 				}
 			}
 		}
-	}
-	
-	void affectEdited()
-	{
-		Entity e = EntityList.get(getEdited());
 	}
 	
 
@@ -413,7 +410,7 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 					for(int a = 0; a < EntityList.size(); a++)
 					{
 						Entity e2 = EntityList.get(a); 
-						if(i != a && e2.type == Entity.TYPE_GRAVITYAFFECTED)
+						if(i != a && e2.type == Entity.TYPE_GRAVITYAFFECTED && !e2.anchored)
 						{
 							double distance = Math.sqrt(Math.pow(e1.x-e2.x,2)+ Math.pow(e1.y-e2.y,2));
 							if(distance > 1 + 0.7*(e1.getRadius()+e2.getRadius()))//this block changes the momentum of e2 
