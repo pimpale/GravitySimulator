@@ -9,8 +9,6 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import colsim.Entity;
-
 import java.util.ArrayList;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -343,7 +341,8 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 				e.veledited = true;
 			}
 		}
-		
+	
+		if(getEdited() != -1)
 		{
 			Entity e = EntityList.get(getEdited());
 			//the following buttons edit the properties of the selected Entity
