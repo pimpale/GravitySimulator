@@ -67,6 +67,11 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 			speed = (int)getResponse("Input application speed. Only positive integers.", speed, true, true);
 		}
 
+    if(IsButtonClicked(710, 290, 290,20)) {
+      centerPosition();
+      centerVelocity();
+    }
+
 		checkEdit();//check if this action is to change the editable object.
 	}
 
@@ -215,6 +220,57 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 		return -1;
 	}
 
+
+  void centerPosition() {
+    double accX = 0;
+    double accY = 0;
+    double totalMass = 0;
+
+    int entityCount = EntityList.size();
+    for(int i = 0; i < entityCount; i++) {
+      Entity e = EntityList.get(i);
+      accX += e.x*e.mass;
+      accY += e.y*e.mass;
+      totalMass += e.mass;
+    }
+
+    double x = accX/totalMass;
+    double y = accY/totalMass;
+
+    // Now subtract this velocity from everyone
+    for(int i = 0; i < entityCount; i++) {
+      Entity e = EntityList.get(i);
+      e.x = e.x - x + 350;
+      e.y = e.y - y + 350;
+    }
+  }
+
+  // Subtracts the average velocity from all objects TODO
+  void centerVelocity() {
+
+    double totalXMom = 0;
+    double totalYMom = 0;
+
+    double totalMass = 0;
+
+    int entityCount = EntityList.size();
+    for(int i = 0; i < entityCount; i++) {
+      Entity e = EntityList.get(i);
+      totalXMom += e.xMomentum;
+      totalYMom += e.yMomentum;
+      totalMass += e.mass;
+    }
+
+    double averageXVel = totalXMom / totalMass;
+    double averageYVel = totalYMom / totalMass;
+
+    // Now subtract this velocity from everyone
+    for(int i = 0; i < entityCount; i++) {
+      Entity e = EntityList.get(i);
+      e.xMomentum -= averageXVel*e.mass;
+      e.yMomentum -= averageYVel*e.mass;
+    }
+  }
 	
 	double getRadius(Entity e)
 	{
@@ -282,6 +338,11 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 		return new Force(dire, magn);
 	}
 	
+  Force getMomentum(Entity e) {
+    double dir = Math.atan2(e.yMomentum, e.xMomentum);
+    double mag = Math.hypot(e.xMomentum, e.yMomentum);
+    return new Force(dir, mag);
+  }
 	
 	//initializes the game
 	void initialize()
@@ -301,9 +362,9 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 
 	void functions() throws InterruptedException
 	{
-		repaint(10);
 		moveEntity();
 		gravity();
+		repaint();
 		Thread.sleep(speed);
 	}
 
@@ -488,10 +549,12 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 		g2d.fillRect(800, 20, 80, 20);
 		g2d.fillRect(890, 20, 80, 20);
 		g2d.fillRect(710, 260, 260, 20);
+		g2d.fillRect(710, 290, 260, 20);
 		g2d.setPaint(Color.black);
 		g2d.drawString("TRACING", 893, 35);
 		g2d.drawString("ADD_OBJECT", 803, 35);
 		g2d.drawString("CHANGE_APPLICATION_SPEED", 713, 275);
+		g2d.drawString("CENTER_AND_TRACK", 713, 305);
 		if(paused == true)
 		{
 			g2d.drawString("PLAY", 713, 35);
@@ -589,6 +652,7 @@ public class GravitySimulator extends JPanel implements MouseListener, MouseMoti
 	public static void main(String[] args) throws InterruptedException 
 	{
 		JFrame frame = new JFrame("Gravity Simulator");
+    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		GravitySimulator game = new GravitySimulator();
 		frame.add(game);
 		frame.setSize(1000, 700);                                        //creating window
